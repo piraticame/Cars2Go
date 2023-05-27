@@ -23,7 +23,7 @@
             <li><a href="../index.php">Home</a></li>
             <li><a href="#">Login</a></li>
             <li><a href="cars.php">See Cars</a></li>
-            <li><a href="#">Faqs</a></li>
+            <li><a href="faq.php">Faqs</a></li>
           </ul>
         </div>
       </nav>

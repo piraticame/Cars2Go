@@ -39,7 +39,7 @@ while ($row = mysqli_fetch_assoc($result)) {
   $NonACperKm = $row['NonACperKm'];
   $CarImg = $row['CarImg'];
 
-  // Generate the HTML for each clickable div with a link to order.php
+  //
   echo "<div class='car-div' id='div$id'>";
   echo "<a href='order.php?id=$id'>";
   echo "<img src='../img/$CarImg' alt=''>";
