@@ -21,7 +21,7 @@
         <div class="navbar-links">
           <ul>
             <li><a href="../index.php">Home</a></li>
-            <li><a href="#">Login</a></li>
+            <li><a href="login.php">Login</a></li>
             <li><a href="cars.php">See Cars</a></li>
             <li><a href="faq.php">Faqs</a></li>
           </ul>
