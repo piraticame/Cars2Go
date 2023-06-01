@@ -1,0 +1,2 @@
+INSERT INTO car(CarName,PlateNumber,ACperDay,ACperKm,NonACperDay,NonACperKm,CarImg) VALUES();
+INSERT INTO car(CarName,PlateNumber,ACperDay,ACperKm,NonACperDay,NonACperKm,CarImg) VALUES("Creta", "091A2",3000, 100, 2300, 70, "creta.jpg");
