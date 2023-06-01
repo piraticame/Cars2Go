@@ -1,6 +1,4 @@
 <?php
-require '../database/config.php';
-
 ?>
 <html lang="en">
 <head>

@@ -52,9 +52,9 @@
 .veen > .wrapper {
     position: absolute;
     width: 40%;
-    height: 130%;
+    height: 120%;
     top: -10%;
-    left: 5%;
+    left: 30%;
     background: #fff;
     box-shadow: 0 0 4px rgba(0,0,0,.14), 0 4px 8px rgba(0,0,0,.28);
     transition: all .5s;
@@ -62,7 +62,7 @@
     overflow: hidden;
 }
 .veen .wrapper > form{
-    padding: 416px 30px 30px;
+    padding: 15px 30px 30px;
     width: 100%;
     transition: all .5s;
     background: #fff;
@@ -76,7 +76,7 @@ outline: none;
 visibility: visible;
 }
 .veen .wrapper #register{
-    transform: translateY(-90%) translateX(100%);
+    transform: translateY(-80%) translateX(100%);
 visibility: hidden;
 }
 .veen .wrapper.move #register{
@@ -84,7 +84,7 @@ visibility: hidden;
 visibility: visible;
 }
 .veen .wrapper.move #login{
-    transform: translateX(-100%) translateY(-90%);
+    transform: translateX(-100%);
 visibility: hidden;
 }
 .veen .wrapper > form > div {
@@ -130,7 +130,7 @@ visibility: hidden;
 }
 @media (max-width: 767px){
     .veen{
-        padding: 5px;
+        padding: 50px;
         margin: 0;
         width: 100%;
         display: block;

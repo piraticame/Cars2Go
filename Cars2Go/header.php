@@ -21,7 +21,16 @@
         <div class="navbar-links">
           <ul>
             <li><a href="index.php">Home</a></li>
-            <li><a href="page/login.php">Login</a></li>
+            <?php
+            if(isset($_SESSION['CusID'])){
+              echo '<li><a href="page/cars.php">' . $_SESSION['username'] . '</a></li>';
+              echo '<li><a href="page/logout.php">Logout</a></li>';
+            }
+            else{
+              echo '<li><a href="page/login.php">Login</a></li>';
+            }
+            
+            ?>
             <li><a href="page/cars.php">See Cars</a></li>
             <li><a href="page/faq.php">Faqs</a></li>
           </ul>

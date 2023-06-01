@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+<?php
+include('../database/config.php');
+?>
 <html>
     <head>
       <link rel="stylesheet" href="../css/style.css">
@@ -20,8 +22,15 @@
         </a>
         <div class="navbar-links">
           <ul>
-            <li><a href="../index.php">Home</a></li>
-            <li><a href="login.php">Login</a></li>
+            <li><a href="../index.php">Home</a></li>  <?php
+            if(isset($_SESSION['CusID'])){
+              echo '<li><a href="cars.php">' . $_SESSION['username'] . '</a></li>';
+            }
+            else{
+              echo '<li><a href="login.php">Login</a></li>';
+            }
+            
+            ?>
             <li><a href="cars.php">See Cars</a></li>
             <li><a href="faq.php">Faqs</a></li>
           </ul>

@@ -27,48 +27,53 @@
 				<button>Register</button>
 			</div>
 			<div class="wrapper">
-				<form id="login" tabindex="500">
+				<form id="login" tabindex="500" method="POST">
 					<h3>Login</h3>
 					<div class="mail">
-						<input type="mail" name="">
+						<input type="mail" name="username-login">
 						<label>Username</label>
 					</div>
 					<div class="passwd">
-						<input type="password" name="">
+						<input type="password" name="password-login">
 						<label>Password</label>
 					</div>
 					<div class="submit">
-						<input type="submit" class="dark">
+						<input type="submit" class="darkS" name="login">
 					</div>
 				</form>
-				<form id="register" tabindex="502">
+				<form id="register" method="POST">
 					<h3>Register</h3>
 					<div class="first_name">
-						<input type="text" name="">
+						<input type="text" name="fname">
 						<label>First Name</label>
 					</div>
 					<div class="last_name">
-						<input type="text" name="">
+						<input type="text" name="lname">
 						<label>Last Name</label>
 					</div>
 					<div class="middle_name">
-						<input type="text" name="">
+						<input type="text" name="mname">
 						<label>Middle Name</label>
 					</div>
 					<div class="contact">
-						<input type="text" name="">
+						<input type="text" name="contact">
 						<label>Contact</label>
 					</div>
+					
+					<div class="contact">
+						<input type="DATE" name="bday" required>
+						<label>Birthdate</label>
+					</div>
 					<div class="uid">
-						<input type="text" name="">
+						<input type="text" name="username">
 						<label>Username</label>
 					</div>
 					<div class="passwd">
-						<input type="password" name="">
+						<input type="password" name="password">
 						<label>Password</label>
 					</div>
 					<div class="submit">
-						<button class="dark">Register</button>
+						<input type="submit" name="register" value="Register" class="dark">
 					</div>
 				</form>
 			</div>
@@ -95,4 +100,76 @@
 <script src="../js/customer_login_script.js"></script>
 
 </body>
+<?php
+if (isset($_POST['register'])){
+	$fname = $_POST['fname'];
+	$lname = $_POST['lname'];
+	$mname = $_POST['mname'];
+	$contact = $_POST['contact'];
+	$bday = $_POST['bday'];
+	$username = $_POST['username'];
+	$password = $_POST['password'];
+	//echo all varaiable
+	
+	//check if username is in my database
+	$query = "SELECT * FROM customer_accounts_view WHERE Username = '$username'";
+	$sql = mysqli_query($conn, $query);
+	$row = mysqli_num_rows($sql);
+		//get the userID
+	if($row == 0){
+		//stored procedure
+		$insert = "CALL customer_register('$fname','$lname','$mname','$contact','$bday')";
+		$sql = mysqli_query($conn, $insert);
+		$state = "SELECT CusID FROM customer_view WHERE FirstName = '$fname' AND LastName = '$lname' AND MiddleName = '$mname'";
+
+		$sql2 = mysqli_query($conn, $state);
+		$result2 = mysqli_fetch_assoc($sql2);
+	
+		$id = $result2['CusID'];
+		$sql = mysqli_query($conn, "CALL customer_account_register('$id','$username','$password')");
+		if($sql){
+			echo '<script>alert("Registered Successfully")</script>';
+		}
+		else{
+			echo '<script>alert("Failed to Register")</script>';
+		}
+	}
+	else{
+		echo '<script>alert("Username already Taken")</script>';
+	}
+	}
+	else if(isset($_POST['login'])){$username = $_POST['username-login'];
+		$password = $_POST['password-login'];
+		
+		// Prepare the statement
+		$stmt = $conn->prepare("CALL customer_login(?, ?, @p_user_id, @p_login_success)");
+		$stmt->bind_param("ss", $username, $password);
+		
+		// Execute the statement
+		$stmt->execute();
+		
+		// Retrieve the output parameters
+		$stmt->close();
+		
+		// Fetch the output parameter values
+		$result = $conn->query("SELECT @p_username as username, @p_user_id AS user_id, @p_login_success AS login_success");
+		$row = $result->fetch_assoc();
+		$user_id = $row['user_id'];
+		$login_success = $row['login_success'];
+		$result->free();
+		
+		if ($login_success == 1) {
+			$_SESSION['CusID'] = $user_id;
+			$_SESSION['username'] = $username;
+			header("Location: ../index.php");
+		} else {
+			echo '<script>alert("Invalid Username or Password")</script>';
+		}
+		
+	}
+	
+
+
+
+?>
 </html>
