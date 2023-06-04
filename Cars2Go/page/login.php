@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <head>
 	<link rel="stylesheet" href="../css/customer_login_style.css">
 	   <meta charset="UTF-8">
@@ -12,7 +11,7 @@
 <body>
    <header>
     <?php
-    include ('header.php');
+    include ('../employee-page/header-employee.php');
    ?>
    </header>
 
@@ -129,6 +128,8 @@ if (isset($_POST['register'])){
 		$sql = mysqli_query($conn, "CALL customer_account_register('$id','$username','$password')");
 		if($sql){
 			echo '<script>alert("Registered Successfully")</script>';
+			//logs
+			$logs = mysqli_query($conn, "INSERT INTO cuslogs_view(CusID, Timestamp, Action) VALUES ('$id', NOW(), 'Registered')");
 		}
 		else{
 			echo '<script>alert("Failed to Register")</script>';
@@ -138,7 +139,8 @@ if (isset($_POST['register'])){
 		echo '<script>alert("Username already Taken")</script>';
 	}
 	}
-	else if(isset($_POST['login'])){$username = $_POST['username-login'];
+	else if(isset($_POST['login'])){
+		$username = $_POST['username-login'];
 		$password = $_POST['password-login'];
 		
 		// Prepare the statement
@@ -161,7 +163,12 @@ if (isset($_POST['register'])){
 		if ($login_success == 1) {
 			$_SESSION['CusID'] = $user_id;
 			$_SESSION['username'] = $username;
-			header("Location: ../index.php");
+			//logs
+			$logs = mysqli_query($conn, "INSERT INTO cuslogs_view(CusID, Timestamp, Action) VALUES ('$user_id', NOW(), 'Logged in')");
+			//header("Location: ../index.php");
+			echo '<script>alert("Login Successful")</script>';
+			echo '<script>window.location.href="../index.php";</script>';
+			
 		} else {
 			echo '<script>alert("Invalid Username or Password")</script>';
 		}

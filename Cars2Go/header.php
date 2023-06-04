@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+<?php
+include('database/config.php');
+?>
 <html>
     <head>
       <link rel="stylesheet" href="css/style.css">

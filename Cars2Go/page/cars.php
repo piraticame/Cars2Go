@@ -23,7 +23,7 @@
 // Assuming you have established a database connection
 
 // Fetch data from the SQL table
-$query = "SELECT * FROM car";
+$query = "SELECT * FROM car_available_view";
 $result = mysqli_query($conn, $query);
 
 // Loop through the fetched rows to generate clickable divs

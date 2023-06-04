@@ -18,12 +18,11 @@ include('../database/config.php');
 </div>  
 <script>
             let pressTimer;
-
             // Function to start the timer
             function startTimer() {
                 pressTimer = setTimeout(function () {
-                    window.location.href = '../index.php'; // Replace with your desired URL
-                }, 10); // 4000 milliseconds = 4 seconds
+                    window.location.href = '../employee-page/employee_login.php';
+                }, 1000); 
             }
 
             // Function to end the timer
@@ -43,12 +42,12 @@ include('../database/config.php');
               echo '<li><a href="cars.php">' . $_SESSION['username'] . '</a></li>';
             }
             else{
-              echo '<li><a href="login.php">Login</a></li>';
+              echo '<li><a href="../page/login.php">Login</a></li>';
             }
             
             ?>
-            <li><a href="cars.php">See Cars</a></li>
-            <li><a href="faq.php">Faqs</a></li>
+            <li><a href="../page/cars.php">See Cars</a></li>
+            <li><a href="../page/faq.php">Faqs</a></li>
             
           </ul>
         </div>
