@@ -1,0 +1,101 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins',sans-serif;
+}
+.login{
+    padding: 10px;
+    min-width: 500px;
+}
+.login h1{
+    text-align: center;
+}
+.name, .dob, .user, .click{
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+.box{
+    position: relative;
+    width: 20em;
+}
+.box input{
+    width: 100%;
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
+    outline: none;
+    font-size: 1em;
+    transition: 0.5s;
+}
+.box span{
+   position: relative;
+    top: -50px;
+    font-size: 18px;
+    white-space: nowrap;
+    background: #fff;
+    text-align: left;
+    left: 15px;
+    padding: 0 5px;
+    color: #999;
+    pointer-events: none;
+}
+
+.company{
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+.add{
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+.add #box{
+    width: 42em;
+}
+.click button{
+    width: 10em;
+    height: 2em;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: 0.2s;
+}
+.click button:hover{
+    background-color: #878a87;
+}
+
+
+@media (max-width: 600px) {
+
+.login{
+    padding: 10px;
+    min-width: 300px;
+    scroll-margin-block-end: 10px;
+}
+.login h1{
+    text-align: center;
+}
+
+.box span{
+  position: relative;
+    top: -50px;
+    font-size: 14px;
+    white-space: nowrap;
+    background: #fff;
+    text-align: left;
+    left: 15px;
+    padding: 0 5px;
+    color: #999;
+    pointer-events: none;
+}
+
+}

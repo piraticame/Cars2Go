@@ -32,9 +32,7 @@ while ($row = mysqli_fetch_assoc($result)) {
   $carName = $row['CarName'];
   $PlateNumber = $row['PlateNumber'];
   $ACperDay = $row['ACperDay'];
-  $ACperKm = $row['ACperKm'];
   $NonACperDay = $row['NonACperDay'];
-  $NonACperKm = $row['NonACperKm'];
   $CarImg = $row['CarImg'];
 
   //
@@ -44,9 +42,7 @@ while ($row = mysqli_fetch_assoc($result)) {
   echo "<h3><i>$carName</i></h3>";
   echo "<p>Plate Number: $PlateNumber</p>";
   echo "<p>AC per Day:  P$ACperDay</p>";
-  echo "<p>AC per Km: P$ACperKm</p>";
   echo "<p>Non AC per Day: P$NonACperDay</p>";
-  echo "<p>Non AC per Km: P$NonACperKm</p>";
   echo "</a>";
   echo "</div>";
 }

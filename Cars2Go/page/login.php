@@ -37,7 +37,7 @@
 						<label>Password</label>
 					</div>
 					<div class="submit">
-						<input type="submit" class="darkS" name="login">
+						<button type="submit" class="dark" name="login">LOGIN</button>
 					</div>
 				</form>
 				<form id="register" method="POST">
@@ -72,7 +72,7 @@
 						<label>Password</label>
 					</div>
 					<div class="submit">
-						<input type="submit" name="register" value="Register" class="dark">
+						<button type="submit" class="dark">REGISTER</button>
 					</div>
 				</form>
 			</div>

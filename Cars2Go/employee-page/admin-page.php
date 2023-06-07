@@ -13,7 +13,7 @@ include ('employee-header.php');
     <div class="container">
 
 
-    <a href="add-car.php">
+    <a href="add_car.php">
             <div class="menu-boxes">
             <img src="../img/addcarsicon.png" alt="add_car">
            
@@ -69,6 +69,14 @@ include ('employee-header.php');
             <img src="../img/salesicon.png" alt="sales">
            
            <br><h2>SALES</h2>
+            </div>
+        </a>
+        
+        <a href="add_driver.php">
+            <div class="menu-boxes">
+            <img src="../img/drivericon.png" alt="sales">
+           
+           <br><h2>ADD DRIVER</h2>
             </div>
         </a>
         
