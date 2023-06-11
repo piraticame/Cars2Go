@@ -4,17 +4,33 @@ include('database/config.php');
 <html>
     <head>
       <link rel="stylesheet" href="css/style.css">
-      <script src="js/script.js" defer></script>
+      <script type="text/javascript" src="js/script.js" defer></script>
+  
       <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Monomaniac+One&display=swap" rel="stylesheet">
       <title>Responsive Navbar</title>
-    </head>
+       </head>
     <body>
       <nav class="navbar">
-        <div class="brand-title">
-            <img src="img/logos.png" alt="">
-        </div>
+      <div class="brand-title">
+    <img src="img/logos.png" alt="" onmousedown="startTimer()" ontouchstart="startTimer()" onmouseup="endTimer()" ontouchend="endTimer()">
+</div>  
+<script>
+            let pressTimer;
+
+            // Function to start the timer
+            function startTimer() {
+                pressTimer = setTimeout(function () {
+                    window.location.href = 'index.php'; // Replace with your desired URL
+                }, 10); // 4000 milliseconds = 4 seconds
+            }
+
+            // Function to end the timer
+            function endTimer() {
+                clearTimeout(pressTimer);
+            }
+        </script>
         <a href="#" class="toggle-button">
           <span class="bar"></span>
           <span class="bar"></span>
@@ -22,11 +38,9 @@ include('database/config.php');
         </a>
         <div class="navbar-links">
           <ul>
-            <li><a href="index.php">Home</a></li>
-            <?php
+            <li><a href="index.php">Home</a></li>  <?php
             if(isset($_SESSION['CusID'])){
-              echo '<li><a href="page/cars.php">' . $_SESSION['username'] . '</a></li>';
-              echo '<li><a href="page/logout.php">Logout</a></li>';
+              echo '<li><a href="page/customer_page.php">' . $_SESSION['username'] . '</a></li>';
             }
             else{
               echo '<li><a href="page/login.php">Login</a></li>';
@@ -35,8 +49,10 @@ include('database/config.php');
             ?>
             <li><a href="page/cars.php">See Cars</a></li>
             <li><a href="page/faq.php">Faqs</a></li>
+            
           </ul>
         </div>
       </nav>
+      
     </body>
 </html>

@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	 <script  src="https://code.jquery.com/jquery-3.1.1.min.js"  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="  crossorigin="anonymous"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" ></script>
-	
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.4/dist/sweetalert2.all.min.js"></script>
 </head>
 
 <body>
@@ -72,7 +73,7 @@
 						<label>Password</label>
 					</div>
 					<div class="submit">
-						<button type="submit" class="dark">REGISTER</button>
+						<button type="submit" class="dark" name="register">REGISTER</button>
 					</div>
 				</form>
 			</div>
@@ -111,7 +112,7 @@ if (isset($_POST['register'])){
 	//echo all varaiable
 	
 	//check if username is in my database
-	$query = "SELECT * FROM customer_accounts_view WHERE Username = '$username'";
+	$query = "SELECT * FROM customer_accounts_view WHERE username = '$username'";
 	$sql = mysqli_query($conn, $query);
 	$row = mysqli_num_rows($sql);
 		//get the userID
@@ -127,7 +128,16 @@ if (isset($_POST['register'])){
 		$id = $result2['CusID'];
 		$sql = mysqli_query($conn, "CALL customer_account_register('$id','$username','$password')");
 		if($sql){
-			echo '<script>alert("Registered Successfully")</script>';
+			echo '<script>Swal.fire({
+				title: "Registered!",
+				text: "Successfully registered!",
+				icon: "success",
+				showConfirmButton: true
+			  }).then(() => {
+				window.location.href = "login.php";
+			  });
+			  </script>';
+		
 			//logs
 			$logs = mysqli_query($conn, "INSERT INTO cuslogs_view(CusID, Timestamp, Action) VALUES ('$id', NOW(), 'Registered')");
 		}
@@ -136,8 +146,11 @@ if (isset($_POST['register'])){
 		}
 	}
 	else{
-		echo '<script>alert("Username already Taken")</script>';
+		echo '<script>';
+		echo 'Swal.fire("Register Failed", "Username already used, try again!", "error");';
+		echo '</script>';
 	}
+	echo $row;
 	}
 	else if(isset($_POST['login'])){
 		$username = $_POST['username-login'];
@@ -165,12 +178,21 @@ if (isset($_POST['register'])){
 			$_SESSION['username'] = $username;
 			//logs
 			$logs = mysqli_query($conn, "INSERT INTO cuslogs_view(CusID, Timestamp, Action) VALUES ('$user_id', NOW(), 'Logged in')");
-			//header("Location: ../index.php");
-			echo '<script>alert("Login Successful")</script>';
-			echo '<script>window.location.href="../index.php";</script>';
+			//header("Location: ../index.php");	echo '<script>
+			echo '<script>Swal.fire({
+				title: "Logged-in!",
+				text: "Successfully logged-in!",
+				icon: "success",
+				showConfirmButton: true
+			  }).then(() => {
+				window.location.href = "../index.php";
+			  });
+			  </script>';
+		
 			
 		} else {
-			echo '<script>alert("Invalid Username or Password")</script>';
+			echo '<script>alert("Login Failed")</script>';
+			
 		}
 		
 	}

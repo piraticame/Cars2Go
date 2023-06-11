@@ -5,7 +5,9 @@
 	   <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.4/dist/sweetalert2.all.min.js"></script>
+
 	
 </head>
 
@@ -79,7 +81,25 @@
     $license = $_POST['license'];
     $birthday = $_POST['birthday'];
     $imageName = $_FILES['picture']['name'];
-    
+    //check if license number already exists
+    $query = "SELECT * FROM driver_view WHERE License = '$license'";
+    $query_run = mysqli_query($conn, $query);
+    if (mysqli_num_rows($query_run) > 0) {
+        
+		echo '<script>
+		Swal.fire({
+		  icon: "failed",
+		  title: "License exists",
+		  text: "Drivers License already used.",
+		  showConfirmButton: true
+		}).then(() => {
+		  window.location.href = "add_driver.php";
+		});
+	  </script>';
+        return;
+    }
+    else{
+        
     // Prepare the stored procedure call
     $query = "CALL InsertDriver(?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = mysqli_prepare($conn, $query);
@@ -87,7 +107,7 @@
     // Bind the parameter values to the prepared statement
     mysqli_stmt_bind_param($stmt, "ssssssss", $fname, $lname, $contact, $address, $gender, $birthday, $license, $imageName);
     
-    // Execute the stored procedure
+    // Execute the stored procedure 
     $query_run = mysqli_stmt_execute($stmt);
     
     if ($query_run) {
@@ -98,14 +118,32 @@
             // Image uploaded successfully
         }
     
-        echo '<script> alert("Data Saved"); </script>';
+		echo '<script>
+		Swal.fire({
+		  icon: "success",
+		  title: "Driver Saved",
+		  text: "Your Driver has been successfully saved.",
+		  showConfirmButton: true
+		}).then(() => {
+		  window.location.href = "view_driver.php";
+		});
+	  </script>';
+	  
     } else {
-        echo '<script> alert("Data Not Saved"); </script>';
+		echo '<script>
+		Swal.fire({
+		  icon: "failed",
+		  title: "Employee Not Saved",
+		  text: "Your Employee is not saved.",
+		  showConfirmButton: true
+		}).then(() => {
+		  window.location.href = "add_driver.php";
+		});
+	  </script>';
+    }
     }
     
     // Close the statement and the database connection
-    mysqli_stmt_close($stmt);
-    mysqli_close($conn);
 }
 
 

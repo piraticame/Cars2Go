@@ -4,6 +4,8 @@
 	   <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.4/dist/sweetalert2.all.min.js"></script>
 	
 	
 </head>
@@ -27,7 +29,6 @@
                 <span>CAR NAME</span>            </div>
         </div>
 		
-		<br>
 		 <div class="add">
            <div class="box" id="box">
                 <input type="text" required="required" name="plate">
@@ -44,8 +45,6 @@
        
 		 <div class="user">
         </div>
-      
-		
 		 <div class="name"> 
             <div class="box">
                 <input type="file" required="required" name="image" accept="jpg" max="2MB">
@@ -84,11 +83,37 @@
     
         if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
             // Image uploaded successfully
-        }
-    
-        echo '<script> alert("Data Saved"); </script>';
+        }echo 
+        '<script>
+        Swal.fire({
+          icon: "success",
+          title: "Car added!",
+          text: "Your Car has been successfully saved.",
+          showConfirmButton: true
+        }).then(() => {
+          window.location.href = "view_cars.php";
+        });
+      </script>';
+      $lastInsertedID = mysqli_insert_id($conn);
+
+      // Add the current $_SESSION ID into the logs table
+      $sessionID = $_SESSION['CusID'];
+      $logSql = "INSERT INTO emplogs_view (CusID, Timestamp, Action) VALUES ('" . $_SESSION['CusID'] . "', NOW(), 'Added a car')";
+$logResult = mysqli_query($conn, $logSql);
+
     } else {
-        echo '<script> alert("Data Not Saved"); </script>';
+        echo 
+        '<script>
+        Swal.fire({
+          icon: "success",
+          title: "Car added!",
+          text: "Your Car has been successfully saved.",
+          showConfirmButton: true
+        }).then(() => {
+          window.location.href = "add_cars.php";
+        });
+      </script>';
+      
     }
     
     // Close the statement and the database connection

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 05, 2023 at 03:55 PM
+-- Generation Time: Jun 10, 2023 at 12:15 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.0.25
 
@@ -25,15 +25,15 @@ DELIMITER $$
 --
 -- Procedures
 --
-CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_account_check` (IN `username` VARCHAR(255), IN `password` VARCHAR(255))   BEGIN
+CREATE PROCEDURE `customer_account_check` (IN `username` VARCHAR(255), IN `password` VARCHAR(255))   BEGIN
     	SELECT username FROM customer_account WHERE username = username;
         END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_account_register` (IN `user_ID` INT, IN `user` VARCHAR(255), IN `pass` VARCHAR(255))   BEGIN
+CREATE PROCEDURE `customer_account_register` (IN `user_ID` INT, IN `user` VARCHAR(255), IN `pass` VARCHAR(255))   BEGIN
     	INSERT INTO customer_accounts_view(CusID,username,password) VALUES(user_ID, user, pass);
         END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_login` (INOUT `p_username` VARCHAR(255), IN `p_password` VARCHAR(255), OUT `p_customer_id` INT, OUT `p_login_success` BOOLEAN)   BEGIN
+CREATE PROCEDURE `customer_login` (INOUT `p_username` VARCHAR(255), IN `p_password` VARCHAR(255), OUT `p_customer_id` INT, OUT `p_login_success` BOOLEAN)   BEGIN
   DECLARE v_customer_id INT;
   DECLARE v_username VARCHAR(255);
 
@@ -55,12 +55,12 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_login` (INOUT `p_username`
   END IF;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `customer_register` (IN `fname` VARCHAR(100), IN `lname` VARCHAR(100), IN `mname` VARCHAR(100), IN `contact` VARCHAR(11), IN `dateofbirth` DATE)   BEGIN
+CREATE PROCEDURE `customer_register` (IN `fname` VARCHAR(100), IN `lname` VARCHAR(100), IN `mname` VARCHAR(100), IN `contact` VARCHAR(11), IN `dateofbirth` DATE)   BEGIN
     INSERT INTO customer_view(FirstName, LastName, MiddleName, Contact, DateOfBirth)
     VALUES (fname, lname, mname, contact, dateofbirth);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `employee_login` (INOUT `p_username` VARCHAR(255), IN `p_password` VARCHAR(255), OUT `p_employee_id` INT, OUT `p_login_success` BOOLEAN)   BEGIN
+CREATE PROCEDURE `employee_login` (INOUT `p_username` VARCHAR(255), IN `p_password` VARCHAR(255), OUT `p_employee_id` INT, OUT `p_login_success` BOOLEAN)   BEGIN
   DECLARE v_employee_id INT;
   DECLARE v_username VARCHAR(255);
 
@@ -81,6 +81,36 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `employee_login` (INOUT `p_username`
     SET p_login_success = FALSE;
   END IF;
 END$$
+
+CREATE PROCEDURE `InsertCarView` (IN `p_name` VARCHAR(255), IN `p_plate` VARCHAR(255), IN `p_acperday` INT(11), IN `p_nonacperday` INT(11), IN `p_imageName` VARCHAR(255))   BEGIN
+    INSERT INTO car_view (CarName, PlateNumber, ACperDay, NonACperDay, status, CarImg)
+    VALUES (p_name, p_plate, p_acperday, p_nonacperday, 'available', p_imageName);
+END$$
+
+CREATE PROCEDURE `InsertDriver` (IN `p_fname` VARCHAR(100), IN `p_lname` VARCHAR(100), IN `p_contact` VARCHAR(11), IN `p_address` VARCHAR(255), IN `p_gender` VARCHAR(50), IN `p_birthday` DATE, IN `p_license` VARCHAR(255), IN `p_imageName` VARCHAR(255))   BEGIN
+    INSERT INTO driver_view (FirstName, LastName, Contact, Address, Gender, DateOfBirth, License, status, DriverImg)
+    VALUES (p_fname, p_lname, p_contact, p_address, p_gender, p_birthday, p_license, 'active', p_imageName);
+END$$
+
+CREATE PROCEDURE `InsertEmployee` (IN `p_FirstName` VARCHAR(100), IN `p_LastName` VARCHAR(100), IN `p_Contact` VARCHAR(11), IN `p_Role` VARCHAR(255), IN `p_EmployeeImg` VARCHAR(255), IN `p_username` VARCHAR(255), IN `p_password` VARCHAR(255))   BEGIN
+    -- Insert statement
+    INSERT INTO employee_view (FirstName, LastName, Contact, role, status, EmployeeImg)
+    VALUES (p_FirstName, p_LastName, p_Contact, p_Role, 'available', p_EmployeeImg);
+
+    -- Get the EmpID of the inserted row
+    SET @EmpID := LAST_INSERT_ID();
+
+    -- Insert into employee_account_view
+    INSERT INTO employee_account_view (EmpID, username, password)
+    VALUES (@EmpID, p_username, p_password);
+
+    -- Select statement
+    SELECT * FROM employee_view WHERE EmpID = @EmpID;
+END$$
+
+CREATE PROCEDURE `insertEmployeeAccount` (IN `EmpID` INT(10), IN `username` VARCHAR(255), IN `password` VARCHAR(255))   BEGIN 
+    INSERT INTO employee_account_view(EmpID,username,password) VALUES (EmpID,username,password);
+    END$$
 
 DELIMITER ;
 
@@ -118,9 +148,31 @@ CREATE TABLE `booking` (
   `AC` tinyint(1) NOT NULL,
   `ChargeType` varchar(100) NOT NULL,
   `TotalCharge` int(11) NOT NULL,
+  `penalty` int(11) NOT NULL,
   `DriverID` int(11) DEFAULT NULL,
   `status` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `booking_view`
+-- (See below for the actual view)
+--
+CREATE TABLE `booking_view` (
+`BookingID` int(11)
+,`CusID` int(10)
+,`CarID` int(10)
+,`CarName` varchar(100)
+,`StartDate` date
+,`EndDate` date
+,`AC` tinyint(1)
+,`ChargeType` varchar(100)
+,`TotalCharge` int(11)
+,`penalty` int(11)
+,`DriverID` int(11)
+,`status` varchar(100)
+);
 
 -- --------------------------------------------------------
 
@@ -133,20 +185,10 @@ CREATE TABLE `car` (
   `CarName` varchar(100) NOT NULL,
   `PlateNumber` varchar(100) NOT NULL,
   `ACperDay` int(11) NOT NULL,
-  `ACperKm` int(11) NOT NULL,
   `NonACperDay` int(11) NOT NULL,
-  `NonACperKm` int(11) NOT NULL,
   `status` varchar(100) NOT NULL,
   `CarImg` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `car`
---
-
-INSERT INTO `car` (`CarID`, `CarName`, `PlateNumber`, `ACperDay`, `ACperKm`, `NonACperDay`, `NonACperKm`, `status`, `CarImg`) VALUES
-(1, 'Audi A4', 'LA2032', 2500, 50, 2000, 35, 'available', 'audi-a4.jpg'),
-(2, 'BMW-6', 'LA2032', 2500, 50, 2000, 35, 'unavailable', 'bmw6.jpg');
 
 -- --------------------------------------------------------
 
@@ -159,9 +201,23 @@ CREATE TABLE `car_available_view` (
 ,`CarName` varchar(100)
 ,`PlateNumber` varchar(100)
 ,`ACperDay` int(11)
-,`ACperKm` int(11)
 ,`NonACperDay` int(11)
-,`NonACperKm` int(11)
+,`status` varchar(100)
+,`CarImg` varchar(100)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `car_view`
+-- (See below for the actual view)
+--
+CREATE TABLE `car_view` (
+`CarID` int(10)
+,`CarName` varchar(100)
+,`PlateNumber` varchar(100)
+,`ACperDay` int(11)
+,`NonACperDay` int(11)
 ,`status` varchar(100)
 ,`CarImg` varchar(100)
 );
@@ -178,47 +234,6 @@ CREATE TABLE `cuslogs` (
   `Timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
   `Action` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `cuslogs`
---
-
-INSERT INTO `cuslogs` (`CusLogID`, `CusID`, `Timestamp`, `Action`) VALUES
-(1, 4, '2023-06-01 16:08:46', 'Logged in'),
-(3, 4, '2023-06-01 16:14:47', 'Logged in'),
-(4, 4, '2023-06-01 16:14:53', 'Logged out'),
-(5, 7, '2023-06-01 16:16:53', 'Registered'),
-(6, 7, '2023-06-01 16:17:07', 'Logged in'),
-(7, 7, '2023-06-01 16:17:29', 'Logged out'),
-(8, 4, '2023-06-01 17:12:57', 'Logged in'),
-(9, 4, '2023-06-01 17:13:28', 'Logged out'),
-(10, 4, '2023-06-01 17:13:39', 'Logged in'),
-(11, 4, '2023-06-01 17:14:44', 'Logged in'),
-(12, 4, '2023-06-01 17:15:26', 'Logged in'),
-(13, 4, '2023-06-01 17:15:41', 'Logged out'),
-(14, 4, '2023-06-01 17:15:47', 'Logged in'),
-(15, 4, '2023-06-01 17:16:28', 'Logged in'),
-(16, 4, '2023-06-01 17:37:12', 'Logged in'),
-(17, 4, '2023-06-01 17:38:44', 'Logged in'),
-(18, 6, '2023-06-01 17:38:47', 'Logged in'),
-(19, 4, '2023-06-01 17:40:26', 'Logged in'),
-(20, 4, '2023-06-01 17:42:38', 'Logged in'),
-(21, 4, '2023-06-01 17:42:45', 'Logged in'),
-(22, 6, '2023-06-01 17:44:17', 'Logged in'),
-(23, 6, '2023-06-01 17:47:26', 'Logged out'),
-(24, 4, '2023-06-01 17:47:32', 'Logged in'),
-(25, 4, '2023-06-01 19:30:18', 'Logged out'),
-(26, 4, '2023-06-01 19:32:07', 'Logged in'),
-(27, 4, '2023-06-01 19:32:15', 'Logged out'),
-(28, 4, '2023-06-01 19:34:03', 'Logged in'),
-(29, 4, '2023-06-01 19:34:15', 'Logged in'),
-(30, 4, '2023-06-01 19:36:18', 'Logged out'),
-(33, 6, '2023-06-03 06:41:21', 'Logged in'),
-(34, 6, '2023-06-03 06:43:23', 'Logged out'),
-(35, 4, '2023-06-03 06:48:12', 'Logged in'),
-(36, 4, '2023-06-03 07:09:56', 'Logged out'),
-(40, 6, '2023-06-03 07:43:23', 'Logged in'),
-(41, 6, '2023-06-03 07:43:39', 'Logged out');
 
 -- --------------------------------------------------------
 
@@ -248,16 +263,6 @@ CREATE TABLE `customer` (
   `DateOfBirth` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `customer`
---
-
-INSERT INTO `customer` (`CusID`, `FirstName`, `LastName`, `MiddleName`, `Contact`, `DateOfBirth`) VALUES
-(4, 'Howard Glen', 'Gloria', 'Cortel', '09514079156', '2003-02-11'),
-(5, 'Glen', 'Gloria', 'Onong', '09125907727', '2023-06-28'),
-(6, 'Harold', 'Glen', 'GLoria', '123123', '2023-06-21'),
-(7, 'Jesseca', 'Tubo', 'Latras', '091551515', '2023-06-29');
-
 -- --------------------------------------------------------
 
 --
@@ -269,16 +274,6 @@ CREATE TABLE `customer_account` (
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `customer_account`
---
-
-INSERT INTO `customer_account` (`CusID`, `username`, `password`) VALUES
-(4, 'piraticame', 'lockDOWN11!'),
-(5, 'glen', '123'),
-(6, 'test', '123'),
-(7, 'Pretty GF', '123');
 
 -- --------------------------------------------------------
 
@@ -321,8 +316,29 @@ CREATE TABLE `driver` (
   `Address` varchar(255) NOT NULL,
   `Gender` varchar(50) DEFAULT NULL,
   `DateOfBirth` date DEFAULT NULL,
-  `status` varchar(100) NOT NULL
+  `License` varchar(255) NOT NULL,
+  `status` varchar(100) NOT NULL,
+  `DriverImg` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `driver_view`
+-- (See below for the actual view)
+--
+CREATE TABLE `driver_view` (
+`DriverID` int(11)
+,`FirstName` varchar(100)
+,`LastName` varchar(100)
+,`Contact` varchar(11)
+,`Address` varchar(255)
+,`Gender` varchar(50)
+,`DateOfBirth` date
+,`License` varchar(255)
+,`status` varchar(100)
+,`DriverImg` varchar(255)
+);
 
 -- --------------------------------------------------------
 
@@ -336,29 +352,6 @@ CREATE TABLE `emplogs` (
   `Timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
   `Action` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `emplogs`
---
-
-INSERT INTO `emplogs` (`EmpLogID`, `EmpID`, `Timestamp`, `Action`) VALUES
-(1, 1, '2023-06-02 06:41:27', 'Logged in'),
-(2, 1, '2023-06-03 06:40:17', 'Logged in'),
-(3, 1, '2023-06-03 06:40:53', 'Logged in'),
-(4, 1, '2023-06-03 07:10:22', 'Logged in'),
-(5, 1, '2023-06-03 07:19:43', 'Logged in'),
-(6, 2, '2023-06-03 07:25:52', 'Logged in'),
-(7, 2, '2023-06-03 07:43:44', 'Logged in'),
-(8, 1, '2023-06-03 07:50:25', 'Logged in'),
-(9, 2, '2023-06-03 07:52:52', 'Logged in'),
-(10, 1, '2023-06-03 07:53:02', 'Logged in'),
-(11, 1, '2023-06-04 07:46:44', 'Logged in'),
-(12, 1, '2023-06-04 07:56:17', 'Logged in'),
-(13, 1, '2023-06-04 08:13:11', 'Logged in'),
-(14, 1, '2023-06-04 08:22:56', 'Logged in'),
-(15, 1, '2023-06-04 08:42:07', 'Logged in'),
-(16, 1, '2023-06-04 08:47:36', 'Logged in'),
-(17, 1, '2023-06-04 09:28:43', 'Logged in');
 
 -- --------------------------------------------------------
 
@@ -385,16 +378,16 @@ CREATE TABLE `employee` (
   `LastName` varchar(100) NOT NULL,
   `Contact` varchar(11) DEFAULT NULL,
   `role` varchar(255) NOT NULL,
-  `status` varchar(100) NOT NULL
+  `status` varchar(100) NOT NULL,
+  `EmployeeImg` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `employee`
 --
 
-INSERT INTO `employee` (`EmpID`, `FirstName`, `LastName`, `Contact`, `role`, `status`) VALUES
-(1, 'Admin', 'Admin', 'N/A', 'admin', 'active'),
-(2, 'Wawee', 'Gloria', '0966545', 'employee', 'active');
+INSERT INTO `employee` (`EmpID`, `FirstName`, `LastName`, `Contact`, `role`, `status`, `EmployeeImg`) VALUES
+(1, 'Marvin Boss', 'marvs', 'N/A', 'admin', 'active', '352608649_269443912320880_3410201373638782538_n.jpg');
 
 -- --------------------------------------------------------
 
@@ -413,8 +406,7 @@ CREATE TABLE `employee_account` (
 --
 
 INSERT INTO `employee_account` (`EmpID`, `username`, `password`) VALUES
-(1, 'root', 'root'),
-(2, 'test', '123');
+(1, 'root', 'root');
 
 -- --------------------------------------------------------
 
@@ -441,7 +433,17 @@ CREATE TABLE `employee_view` (
 ,`Contact` varchar(11)
 ,`role` varchar(255)
 ,`status` varchar(100)
+,`EmployeeImg` varchar(255)
 );
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `booking_view`
+--
+DROP TABLE IF EXISTS `booking_view`;
+
+CREATE VIEW `booking_view`  AS SELECT `booking`.`BookingID` AS `BookingID`, `booking`.`CusID` AS `CusID`, `booking`.`CarID` AS `CarID`, `booking`.`CarName` AS `CarName`, `booking`.`StartDate` AS `StartDate`, `booking`.`EndDate` AS `EndDate`, `booking`.`AC` AS `AC`, `booking`.`ChargeType` AS `ChargeType`, `booking`.`TotalCharge` AS `TotalCharge`, `booking`.`penalty` AS `penalty`, `booking`.`DriverID` AS `DriverID`, `booking`.`status` AS `status` FROM `booking`  ;
 
 -- --------------------------------------------------------
 
@@ -450,7 +452,16 @@ CREATE TABLE `employee_view` (
 --
 DROP TABLE IF EXISTS `car_available_view`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `car_available_view`  AS SELECT `car`.`CarID` AS `CarID`, `car`.`CarName` AS `CarName`, `car`.`PlateNumber` AS `PlateNumber`, `car`.`ACperDay` AS `ACperDay`, `car`.`ACperKm` AS `ACperKm`, `car`.`NonACperDay` AS `NonACperDay`, `car`.`NonACperKm` AS `NonACperKm`, `car`.`status` AS `status`, `car`.`CarImg` AS `CarImg` FROM `car` WHERE `car`.`status` = 'available''available'  ;
+CREATE VIEW `car_available_view`  AS SELECT `car`.`CarID` AS `CarID`, `car`.`CarName` AS `CarName`, `car`.`PlateNumber` AS `PlateNumber`, `car`.`ACperDay` AS `ACperDay`, `car`.`NonACperDay` AS `NonACperDay`, `car`.`status` AS `status`, `car`.`CarImg` AS `CarImg` FROM `car` WHERE `car`.`status` = 'available';
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `car_view`
+--
+DROP TABLE IF EXISTS `car_view`;
+
+CREATE VIEW `car_view`  AS SELECT `car`.`CarID` AS `CarID`, `car`.`CarName` AS `CarName`, `car`.`PlateNumber` AS `PlateNumber`, `car`.`ACperDay` AS `ACperDay`, `car`.`NonACperDay` AS `NonACperDay`, `car`.`status` AS `status`, `car`.`CarImg` AS `CarImg` FROM `car`;
 
 -- --------------------------------------------------------
 
@@ -459,7 +470,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `cuslogs_view`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `cuslogs_view`  AS SELECT `cuslogs`.`CusLogID` AS `CusLogID`, `cuslogs`.`CusID` AS `CusID`, `cuslogs`.`Timestamp` AS `Timestamp`, `cuslogs`.`Action` AS `Action` FROM `cuslogs``cuslogs`  ;
+CREATE VIEW `cuslogs_view`  AS SELECT `cuslogs`.`CusLogID` AS `CusLogID`, `cuslogs`.`CusID` AS `CusID`, `cuslogs`.`Timestamp` AS `Timestamp`, `cuslogs`.`Action` AS `Action` FROM `cuslogs`;
 
 -- --------------------------------------------------------
 
@@ -468,7 +479,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `customer_accounts_view`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `customer_accounts_view`  AS SELECT `customer_account`.`CusID` AS `CusID`, `customer_account`.`username` AS `username`, `customer_account`.`password` AS `password` FROM `customer_account``customer_account`  ;
+CREATE VIEW `customer_accounts_view`  AS SELECT `customer_account`.`CusID` AS `CusID`, `customer_account`.`username` AS `username`, `customer_account`.`password` AS `password` FROM `customer_account`;
 
 -- --------------------------------------------------------
 
@@ -477,7 +488,16 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `customer_view`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `customer_view`  AS SELECT `customer`.`CusID` AS `CusID`, `customer`.`FirstName` AS `FirstName`, `customer`.`LastName` AS `LastName`, `customer`.`MiddleName` AS `MiddleName`, `customer`.`Contact` AS `Contact`, `customer`.`DateOfBirth` AS `DateOfBirth` FROM `customer``customer`  ;
+CREATE VIEW `customer_view`  AS SELECT `customer`.`CusID` AS `CusID`, `customer`.`FirstName` AS `FirstName`, `customer`.`LastName` AS `LastName`, `customer`.`MiddleName` AS `MiddleName`, `customer`.`Contact` AS `Contact`, `customer`.`DateOfBirth` AS `DateOfBirth` FROM `customer`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `driver_view`
+--
+DROP TABLE IF EXISTS `driver_view`;
+
+CREATE VIEW `driver_view`  AS SELECT `driver`.`DriverID` AS `DriverID`, `driver`.`FirstName` AS `FirstName`, `driver`.`LastName` AS `LastName`, `driver`.`Contact` AS `Contact`, `driver`.`Address` AS `Address`, `driver`.`Gender` AS `Gender`, `driver`.`DateOfBirth` AS `DateOfBirth`, `driver`.`License` AS `License`, `driver`.`status` AS `status`, `driver`.`DriverImg` AS `DriverImg` FROM `driver`;
 
 -- --------------------------------------------------------
 
@@ -486,7 +506,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `emplogs_view`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `emplogs_view`  AS SELECT `emplogs`.`EmpLogID` AS `EmpLogID`, `emplogs`.`EmpID` AS `EmpID`, `emplogs`.`Timestamp` AS `Timestamp`, `emplogs`.`Action` AS `Action` FROM `emplogs``emplogs`  ;
+CREATE VIEW `emplogs_view`  AS SELECT `emplogs`.`EmpLogID` AS `EmpLogID`, `emplogs`.`EmpID` AS `EmpID`, `emplogs`.`Timestamp` AS `Timestamp`, `emplogs`.`Action` AS `Action` FROM `emplogs`;
 
 -- --------------------------------------------------------
 
@@ -495,7 +515,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `employee_account_view`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `employee_account_view`  AS SELECT `employee_account`.`EmpID` AS `EmpID`, `employee_account`.`username` AS `username`, `employee_account`.`password` AS `password` FROM `employee_account``employee_account`  ;
+CREATE VIEW `employee_account_view`  AS SELECT `employee_account`.`EmpID` AS `EmpID`, `employee_account`.`username` AS `username`, `employee_account`.`password` AS `password` FROM `employee_account`;
 
 -- --------------------------------------------------------
 
@@ -504,7 +524,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `employee_view`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `employee_view`  AS SELECT `employee`.`EmpID` AS `EmpID`, `employee`.`FirstName` AS `FirstName`, `employee`.`LastName` AS `LastName`, `employee`.`Contact` AS `Contact`, `employee`.`role` AS `role`, `employee`.`status` AS `status` FROM `employee``employee`  ;
+CREATE VIEW `employee_view`  AS SELECT `employee`.`EmpID` AS `EmpID`, `employee`.`FirstName` AS `FirstName`, `employee`.`LastName` AS `LastName`, `employee`.`Contact` AS `Contact`, `employee`.`role` AS `role`, `employee`.`status` AS `status`, `employee`.`EmployeeImg` AS `EmployeeImg` FROM `employee`;
 
 --
 -- Indexes for dumped tables
@@ -531,7 +551,8 @@ ALTER TABLE `booking`
 -- Indexes for table `car`
 --
 ALTER TABLE `car`
-  ADD PRIMARY KEY (`CarID`);
+  ADD PRIMARY KEY (`CarID`),
+  ADD UNIQUE KEY `PlateNumber` (`PlateNumber`);
 
 --
 -- Indexes for table `cuslogs`
@@ -557,7 +578,8 @@ ALTER TABLE `customer_account`
 -- Indexes for table `driver`
 --
 ALTER TABLE `driver`
-  ADD PRIMARY KEY (`DriverID`);
+  ADD PRIMARY KEY (`DriverID`),
+  ADD UNIQUE KEY `License` (`License`);
 
 --
 -- Indexes for table `emplogs`
@@ -593,19 +615,19 @@ ALTER TABLE `booking`
 -- AUTO_INCREMENT for table `car`
 --
 ALTER TABLE `car`
-  MODIFY `CarID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `CarID` int(10) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `cuslogs`
 --
 ALTER TABLE `cuslogs`
-  MODIFY `CusLogID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `CusLogID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `customer`
 --
 ALTER TABLE `customer`
-  MODIFY `CusID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `CusID` int(10) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `driver`
@@ -617,13 +639,13 @@ ALTER TABLE `driver`
 -- AUTO_INCREMENT for table `emplogs`
 --
 ALTER TABLE `emplogs`
-  MODIFY `EmpLogID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `EmpLogID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `employee`
 --
 ALTER TABLE `employee`
-  MODIFY `EmpID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `EmpID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- Constraints for dumped tables

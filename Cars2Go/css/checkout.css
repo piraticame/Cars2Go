@@ -1,0 +1,149 @@
+body {
+  font-family: 'Lato', 'Lucida Grande', 'Lucida Sans Unicode', Tahoma, Sans-Serif;
+}
+
+.main {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow-y: scroll;
+  font-size: 22px;
+}
+
+.main::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.main > h2,
+.main > p {
+  text-align: center;
+  font-family: 30px;
+  z-index: 2;
+  position: relative;
+}
+
+
+.date-wrapper {
+  display: flex;
+  gap: 10px;
+}
+.car-details {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.car-image {
+  max-width: 14rem;
+  height: auto;
+  margin-left: 20%;
+}
+.car-text-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.main-content {
+  background-color: rgba(232, 232, 235, 0.9);
+  max-width: 650px;
+  display: flex;
+  flex-direction: column;
+  padding: 40px;
+  margin: 0 auto;
+  margin-bottom: 30px;
+  border-radius: 5px;
+  z-index: 2;
+  position: relative;
+  box-shadow: 0px -1px 10px 5px rgb(190, 187, 190);
+}
+#name,
+#number,
+#date,
+#dropdown,
+#fare,
+#driver,
+#comment,
+#gender,
+#contact {
+  display: block;
+  width: 100%;
+  height: 35px;
+  padding: 5px 8px;
+  color: #000000;
+  background-color: #ffffff;
+  border: 1px solid #eeeeee;
+  border-radius: 5px;
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+label[for=name],
+label[for=fare],
+label[for=number],
+label[for=dropdown],
+label[for=comment],
+label[for=driver],
+label[for=gender],
+label[for=contact] {
+  margin-bottom: 7px;
+  display: inline-block;
+}
+
+#Self-driving,
+#Dual-motor,
+#Performance,
+fieldset input {
+  height: 20px;
+  width: 20px;
+  margin-right: 15px;
+  margin-bottom: 15px;
+}
+
+#submit {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  background: #37af65;
+  border-radius: 2px;
+  cursor: pointer;
+  border: 0;
+  color: #ffffff;
+  font-size: 20px;
+}
+
+@media screen and (max-width: 600px) {
+  .main-content {
+    max-width: 90%;
+    padding: 20px;
+  }
+
+  .car-details {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .car-image {
+    margin-left: 0;
+  }
+
+  .car-text-fields {
+    margin-top: 20px;
+  }
+
+  .date-wrapper {
+    flex-direction: column;
+  }
+
+  #start-date,
+  #end-date {
+    margin-bottom: 20px;
+  }
+}

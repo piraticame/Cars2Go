@@ -40,7 +40,7 @@ include('../database/config.php');
           <ul>
             <li><a href="../index.php">Home</a></li>  <?php
             if(isset($_SESSION['CusID'])){
-              echo '<li><a href="cars.php">' . $_SESSION['username'] . '</a></li>';
+              echo '<li><a href="customer_page.php">' . $_SESSION['username'] . '</a></li>';
             }
             else{
               echo '<li><a href="login.php">Login</a></li>';

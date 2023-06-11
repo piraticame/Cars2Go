@@ -1,5 +1,4 @@
-<?php
-?>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -23,7 +22,7 @@
 // Assuming you have established a database connection
 
 // Fetch data from the SQL table
-$query = "SELECT * FROM car_available_view";
+$query = "SELECT * FROM car_view WHERE status = 'available'";
 $result = mysqli_query($conn, $query);
 
 // Loop through the fetched rows to generate clickable divs
@@ -35,9 +34,8 @@ while ($row = mysqli_fetch_assoc($result)) {
   $NonACperDay = $row['NonACperDay'];
   $CarImg = $row['CarImg'];
 
-  //
   echo "<div class='car-div' id='div$id'>";
-  echo "<a href='order.php?id=$id'>";
+  echo "<a href='checkout.php?id=$id'>";
   echo "<img src='../img/$CarImg' alt=''>";
   echo "<h3><i>$carName</i></h3>";
   echo "<p>Plate Number: $PlateNumber</p>";
@@ -45,6 +43,7 @@ while ($row = mysqli_fetch_assoc($result)) {
   echo "<p>Non AC per Day: P$NonACperDay</p>";
   echo "</a>";
   echo "</div>";
+
 }
 
 ?>

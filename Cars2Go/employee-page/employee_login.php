@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	 <script  src="https://code.jquery.com/jquery-3.1.1.min.js"  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="  crossorigin="anonymous"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" ></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.4/dist/sweetalert2.all.min.js"></script>
 	
 </head>
 
@@ -88,21 +90,44 @@ if(isset($_POST['login'])){
 		//logs
 		$logs = mysqli_query($conn, "INSERT INTO emplogs_view(EmpID, Timestamp, Action) VALUES ('$user_id', NOW(), 'Logged in')");
 		//header("Location: ../index.php");
-		echo '<script>alert("Login Successful")</script>';
+		echo '<script>
+		Swal.fire({
+		  title: "Logged-in!",
+		  text: "Successfully logged-in!",
+		  icon: "success"
+
+		});
+		</script>';
+		
+
 		$sql = mysqli_query($conn, "SELECT role,status from employee_view where EmpID= $user_id");
 		$result = mysqli_fetch_assoc($sql);
 		$role = $result['role'];
+		$_SESSION['role'] = $role;
 		$status = $result['status'];
-		if($role == "admin"){
-			echo '<script>window.location.href="../employee-page/admin-page.php";</script>';
-		}
-		else if($role == "employee"){
-			echo '<script>window.location.href="../header.php";</script>';
+		if ($role == "admin") {
+			echo '<script>
+				setTimeout(function() {
+					window.location.href = "../employee-page/admin-page.php";
+				}, 3000); // 3-second delay
+			</script>';
+		} else if ($role == "employee") {
+			echo '<script>
+				setTimeout(function() {
+					window.location.href = "../employee-page/employee-page.php";
+				}, 3000); // 3-second delay
+			</script>';
 		}
 		
 		
-	} else {
-		echo '<script>alert("Invalid Username or Password")</script>';
+		
+	} else {echo '<script>Swal.fire({
+        title: "Invalid Username or Password",
+        icon: "error",
+        showConfirmButton: true
+      });
+      </script>';
+
 	}
 	
 }
